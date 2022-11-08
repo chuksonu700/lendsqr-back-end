@@ -2,7 +2,7 @@ import {
     Router,
 } from 'express';
 
-import { addMoney, fundAccountCallback, transferRoute, withdraw, withdrawalCallback,userTransactions } from './handler';
+import { addMoney, fundAccountCallback, transferRoute, withdraw, withdrawalCallback,userTransactions } from '../handler';
 
 const router: Router = Router();
 

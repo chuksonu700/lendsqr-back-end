@@ -1,18 +1,16 @@
 const  got = require("got");
-import dotenv from 'dotenv';
-import { createLogger } from '../../../../utils/logger';
-
-dotenv.config();
+import {ENV} from '../../../config'
+import { createLogger } from '../../../utils/logger';
 
 const logger =createLogger("Fund Account")
 const fundAccount= async (email:string,amount:Number,transId:string,full_name:string)=>{
 try {
     logger.info("Generating Fund Link");
-    console.log(process.env.FLW_SECRET_KEY);
+    console.log(ENV.FLW_SECRET_KEY);
     
     const response = await got.post("https://api.flutterwave.com/v3/payments", {
         headers: {
-            Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`
+            Authorization: `Bearer ${ENV.FLW_SECRET_KEY}`
         },
         json: {
             tx_ref: transId,

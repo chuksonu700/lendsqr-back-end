@@ -27,4 +27,11 @@ if (process.env.NODE_ENV === "production") {
   }
 }
 
+export const ENV ={
+  FLW_PUBLIC_KEY:process.env.FLW_PUBLIC_KEY,
+  FLW_SECRET_KEY:process.env.FLW_SECRET_KEY,
+  flv_Ecrypt_key:process.env.flv_Ecrypt_key,
+  port:process.env.PORT
+}
+
 export default mysqlConnection;

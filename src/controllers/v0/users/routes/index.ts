@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createNewUser, getUserDetails } from './handler';
+import { createNewUser, getUserDetails } from '../handler';
 
 const router: Router = Router();
 
@@ -8,7 +8,5 @@ router.get('/:email', getUserDetails)
 
 //Create Account
 router.post('/create-account', createNewUser)
-
-
 
 export const UserRouter: Router = router;

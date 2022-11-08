@@ -1,7 +1,8 @@
 import { Request, Response} from 'express';
 import {  v4 as uuid } from 'uuid';
-import  mysqlConnection from '../../../../config/config';
-import { createLogger } from '../../../../utils/logger';
+import  mysqlConnection from '../../../config';
+import { createLogger } from '../../../utils/logger';
+import { getAccountDetails } from '../utils/utility';
 
 
 const knex = require('knex')(mysqlConnection)
@@ -12,8 +13,8 @@ const logger = createLogger("User Router")
 export const getUserDetails = async (req: Request, res: Response) => {
 
   logger.info('Getting single User details')
-  console.log(req.params.email);
-  const rows = await knex.from('users').where({email:req.params.email}).select("id","email","acc_bal","full_name");
+
+  const rows = await getAccountDetails(req.params.email)
   if (rows.length>0) {
     logger.info("User Found")
     res.status(200).send(rows);

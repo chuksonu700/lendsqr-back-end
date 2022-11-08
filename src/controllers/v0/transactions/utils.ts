@@ -1,20 +1,18 @@
-import mysqlConnection from '../../../../config/config';
+import mysqlConnection, {ENV} from '../../../config';
 import fundAccount from './fund';
-import dotenv from 'dotenv';
 import {
     runWithdrawal, withdrawalStatus
 } from './withdraw';
 import {
     createLogger
-} from '../../../../utils/logger';
+} from '../../../utils/logger';
 
 
 const logger = createLogger("Utils Functions")
 
-dotenv.config();
 const Flutterwave = require('flutterwave-node-v3');
 
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+const flw = new Flutterwave(ENV.FLW_PUBLIC_KEY, ENV.FLW_SECRET_KEY);
 const knex = require('knex')(mysqlConnection);
 
 //getting the Payment link
@@ -310,16 +308,4 @@ const runIn2Mins = async(id: any) => {
         console.log(checkStatus)
         verifyWithdrawal(checkStatus)
     }, 90000); 
-}
-
-export const getAccountDetails = async(email:string)=>{
-    logger.info("Get Account Balance");
-    const rows = await knex.from('users').where({email:email}).select("id","email","acc_bal","full_name");
-
-    if (rows.length < 1) {
-        return {message:"Not found"}
-    } else {
-        return  rows[0]     
-    }
-
 }

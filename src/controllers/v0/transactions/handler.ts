@@ -6,14 +6,13 @@ import {
 import {
     v4 as uuid
 } from 'uuid';
-import mysqlConnection from '../../../../config/config';
+import mysqlConnection, {ENV}from '../../../config';
 const Flutterwave = require('flutterwave-node-v3');
-import dotenv from 'dotenv';
-import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyEmail, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions, getAccountDetails } from './utils';
 
-// setting up envroment variable
-dotenv.config();
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyEmail, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions} from './utils';
+import { getAccountDetails } from '../utils/utility';
+
+const flw = new Flutterwave(ENV.FLW_PUBLIC_KEY, ENV.FLW_SECRET_KEY);
 
 const knex = require('knex')(mysqlConnection);
 

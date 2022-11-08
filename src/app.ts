@@ -1,13 +1,9 @@
 import express, { Express} from 'express';
-import dotenv from 'dotenv';
 import knex from './knex';
 import {IndexRouter} from './controllers/v0/indexRouter'
 import bodyParser from'body-parser';
 import cors from 'cors';
 var morgan = require('morgan')
-
-//configuring enviroment Variables
-dotenv.config();
 
 //connecting the database
 knex.raw("SELECT VERSION()").then(

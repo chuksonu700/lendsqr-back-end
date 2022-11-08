@@ -4,14 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const knex_1 = __importDefault(require("./knex"));
 const indexRouter_1 = require("./controllers/v0/indexRouter");
 const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 var morgan = require('morgan');
-//configuring enviroment Variables
-dotenv_1.default.config();
 //connecting the database
 knex_1.default.raw("SELECT VERSION()").then((version) => console.log((version[0][0]))).catch((err) => { console.log(err); throw err; })
     .finally(() => {

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TranRouter = void 0;
 const express_1 = require("express");
-const handler_1 = require("../handler");
+const handler_1 = require("./handler");
 const router = (0, express_1.Router)();
 router.post('/add-money', handler_1.addMoney);
 router.get('/fund-account-callback', handler_1.fundAccountCallback);

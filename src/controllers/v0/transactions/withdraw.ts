@@ -1,14 +1,12 @@
-import dotenv from 'dotenv';
-import { createLogger } from '../../../../utils/logger';
+import {ENV} from '../../../config';
+import { createLogger } from '../../../utils/logger';
 const  got = require("got");
 
 const logger = createLogger("Withdrawal")
 
-dotenv.config();
 const Flutterwave = require('flutterwave-node-v3');
 
-
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+const flw = new Flutterwave(ENV.FLW_PUBLIC_KEY, ENV.FLW_SECRET_KEY);
 
 //Run Withdrawal
 export const runWithdrawal =async (withdrawRequest:any)=>{
