@@ -9,7 +9,7 @@ import {
 import mysqlConnection from '../../../../config/config';
 const Flutterwave = require('flutterwave-node-v3');
 import dotenv from 'dotenv';
-import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyReciever, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions } from './utils';
+import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyEmail, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions } from './utils';
 
 // setting up envroment variable
 dotenv.config();
@@ -26,10 +26,12 @@ export const addMoney = async (req: Request, res: Response) => {
         full_name
     } = req.body;
 
-    if (!amount || amount < 1|| !description || trans_type !== "Add-Money" || !email || !full_name) {
+      const validatUserEmail = await verifyEmail(email)
+
+    if (!amount || amount < 1|| !description || trans_type !== "Add-Money" || !email || !full_name ||validatUserEmail==false) {
       //incomplete Details
       res.status(400).send({error:"Bad Request"});
-    } else {
+    }  else {
 
     const id = await uuid();
     const newTransaction = {
@@ -40,7 +42,7 @@ export const addMoney = async (req: Request, res: Response) => {
         description,
     }
     try {
-        const saved = await savePendindgTransaction(newTransaction);    
+        const saved = await savePendindgTransaction(newTransaction);  
         const linkJson = await getFundAccountLink(email, amount, id, full_name);
         res.status(200).send(linkJson);            
     } catch (error:any) {
@@ -81,7 +83,7 @@ export const transferRoute = async (req: Request, res: Response) => {
       return
     }
     //verifying reciever
-    const validReciever = await verifyReciever(email_reciever);
+    const validReciever = await verifyEmail(email_reciever);
     if (!validReciever) {
           res.status(400).send({message:"Invalid Reciever"});
           return

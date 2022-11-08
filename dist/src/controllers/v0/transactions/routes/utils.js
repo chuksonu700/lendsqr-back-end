@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyReciever = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
+exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyEmail = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
 const config_1 = __importDefault(require("../../../../config/config"));
 const fund_1 = __importDefault(require("./fund"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -35,6 +35,7 @@ const savePendindgTransaction = (newTransaction) => __awaiter(void 0, void 0, vo
     knex('transactions').insert(newTransaction)
         .catch((err) => {
         console.log(err);
+        return false;
     })
         .finally(() => {
         return 'Transaction Inserted';
@@ -152,7 +153,7 @@ const transfer = (transaction) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.transfer = transfer;
-const verifyReciever = (email) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("verify Reciever's Email");
     const rows = yield knex.from('users').where({
         email: email
@@ -164,7 +165,7 @@ const verifyReciever = (email) => __awaiter(void 0, void 0, void 0, function* ()
         return true;
     }
 });
-exports.verifyReciever = verifyReciever;
+exports.verifyEmail = verifyEmail;
 const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, function* () {
     const { bank, bank_acc_name, bank_acc_num, email_sender, amount, trans_type, } = withdrawal;
     logger.info("Make Withdrawal");

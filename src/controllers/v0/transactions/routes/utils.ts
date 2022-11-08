@@ -31,6 +31,7 @@ export const savePendindgTransaction = async (newTransaction: any) => {
     knex('transactions').insert(newTransaction)
         .catch((err: any) => {
             console.log(err);
+            return false;
         })
         .finally(() => {
             return 'Transaction Inserted'
@@ -156,7 +157,7 @@ export const transfer = async (transaction: any) => {
 
 }
 
-export const verifyReciever = async (email: any) => {
+export const verifyEmail = async (email: any) => {
     logger.info("verify Reciever's Email");
     const rows = await knex.from('users').where({
         email: email

@@ -24,7 +24,8 @@ const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_K
 const knex = require('knex')(config_1.default);
 const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, description, trans_type, email, full_name } = req.body;
-    if (!amount || amount < 1 || !description || trans_type !== "Add-Money" || !email || !full_name) {
+    const validatUserEmail = yield (0, utils_1.verifyEmail)(email);
+    if (!amount || amount < 1 || !description || trans_type !== "Add-Money" || !email || !full_name || validatUserEmail == false) {
         //incomplete Details
         res.status(400).send({ error: "Bad Request" });
     }
@@ -73,7 +74,7 @@ const transferRoute = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return;
     }
     //verifying reciever
-    const validReciever = yield (0, utils_1.verifyReciever)(email_reciever);
+    const validReciever = yield (0, utils_1.verifyEmail)(email_reciever);
     if (!validReciever) {
         res.status(400).send({ message: "Invalid Reciever" });
         return;
