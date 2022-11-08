@@ -123,7 +123,7 @@ export const withdraw = async(req:Request,res:Response)=>{
     }
     const runVerifyEmail = await verifyEmail(email_sender)
     const runGetAccountBalance = await getAccountDetails(email_sender)
-    if (!bank||!bank_acc_name||!bank_acc_num||!email_sender||!amount||trans_type !=="Withdrawal"||!description || amount<0 || runVerifyEmail==false) {
+    if (!bank||!bank_acc_name||!bank_acc_num||!email_sender||!amount||trans_type !=="Withdrawal"||!description || amount<1 || runVerifyEmail==false) {
       res.status(400).send({message:"Bad Request"});
       return
     } else if(runGetAccountBalance.acc_bal <amount){ 

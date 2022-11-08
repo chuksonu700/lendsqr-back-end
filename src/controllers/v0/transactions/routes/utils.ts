@@ -237,13 +237,20 @@ export const makeWithdrawals = async (withdrawal: any) => {
 export const verifyWithdrawal = async (payload: any) => {
     
     logger.info("Verify Withdrawal Transaction ");
+
+    //get Transaction details from DB
     const rows = await knex.from('transactions').where({
-        id: payload.reference
-    }).select("id", "amount", "trans_type", "email_sender", "description");
+        id: payload.data.reference
+    }).select("id", "amount", "trans_type", "email_sender", "description","status");
     
     let expectedAmount: Number = rows[0].amount
     let email: string = rows[0].email_sender
     
+    if (rows[0].status == "Failed" ||rows[0].status == "Completed" ) {
+        //transaction Already Failed or Completed
+        console.log("Already Updated")
+        return "Transaction Already Updated"
+    }
     if (
         payload.data.status === "SUCCESSFUL" &&
         payload.data.amount === expectedAmount &&
@@ -254,7 +261,7 @@ export const verifyWithdrawal = async (payload: any) => {
             logger.info("Withdraw Transaction Successfull");
             // update transaction from Queued to Completed
             const updatedId = await knex('transactions').where({
-                id: payload.reference
+                id: payload.data.reference
             }).update({
                 status: "Completed"
             });
@@ -300,6 +307,7 @@ const runIn2Mins = async(id: any) => {
     setTimeout(async() => {
         const checkStatus = await withdrawalStatus(id);
         console.log(checkStatus)
+        verifyWithdrawal(checkStatus)
     }, 90000); 
 }
 
@@ -312,4 +320,5 @@ export const getAccountDetails = async(email:string)=>{
     } else {
         return  rows[0]     
     }
+
 }

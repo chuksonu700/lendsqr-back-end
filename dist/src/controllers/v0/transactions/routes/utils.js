@@ -219,11 +219,17 @@ const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, functi
 exports.makeWithdrawals = makeWithdrawals;
 const verifyWithdrawal = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Verify Withdrawal Transaction ");
+    //get Transaction details from DB
     const rows = yield knex.from('transactions').where({
-        id: payload.reference
-    }).select("id", "amount", "trans_type", "email_sender", "description");
+        id: payload.data.reference
+    }).select("id", "amount", "trans_type", "email_sender", "description", "status");
     let expectedAmount = rows[0].amount;
     let email = rows[0].email_sender;
+    if (rows[0].status == "Failed" || rows[0].status == "Completed") {
+        //transaction Already Failed or Completed
+        console.log("Already Updated");
+        return "Transaction Already Updated";
+    }
     if (payload.data.status === "SUCCESSFUL" &&
         payload.data.amount === expectedAmount &&
         payload.data.currency === "NGN") {
@@ -232,7 +238,7 @@ const verifyWithdrawal = (payload) => __awaiter(void 0, void 0, void 0, function
             logger.info("Withdraw Transaction Successfull");
             // update transaction from Queued to Completed
             const updatedId = yield knex('transactions').where({
-                id: payload.reference
+                id: payload.data.reference
             }).update({
                 status: "Completed"
             });
@@ -278,6 +284,7 @@ const runIn2Mins = (id) => __awaiter(void 0, void 0, void 0, function* () {
     setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
         const checkStatus = yield (0, withdraw_1.withdrawalStatus)(id);
         console.log(checkStatus);
+        (0, exports.verifyWithdrawal)(checkStatus);
     }), 90000);
 });
 const getAccountDetails = (email) => __awaiter(void 0, void 0, void 0, function* () {

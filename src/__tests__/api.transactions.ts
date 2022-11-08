@@ -116,7 +116,7 @@ describe("Withdraw",() => {
     amount:-400,
     trans_type:"Withdrawala",
     description:"I need my Money",
-    email_sender:"chuksonu700@gmail.com",
+    email_sender:"chuksonu700@gmail.compo",
     bank_acc_num:"0690000032",
     bank:"Access Bank"
   }
@@ -126,5 +126,46 @@ describe("Withdraw",() => {
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBeDefined();
   });
+
+  let withdrawInsufficientFunds = {
+    amount:40000000,
+    trans_type:"Withdrawal",
+    description:"I need my Money",
+    email_sender:"chuksonu700@gmail.com",
+    bank_acc_num:"0690000032",
+    bank_acc_name:"Chuks Onu",
+    bank:"Access Bank"
+  }
   
+  it("Withdraw Insufficient Funds", async () => {
+    const response = await requests(baseURLs).post(`/withdraw`).send(withdrawDetails);
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBeDefined();
+    expect(response.body.Balance).toBeDefined();
+  });
+  
+});
+
+//withdraw
+describe("Withdraw",() => {
+  let withdrawDetails = {
+    amount:400,
+    trans_type:"Withdrawal",
+    description:"I need my Money",
+    email_sender:"chuksonu700@gmail.com",
+    bank_acc_num:"0690000032",
+    bank_acc_name:"Chuks Onu",
+    bank:"Access Bank"
+  }
+  
+  it("Withdraw", async () => {
+    const response = await requests(baseURLs).post(`/withdraw`).send(withdrawDetails);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.status).toBe("success");
+    expect(response.body.data.account_number).toBe(withdrawDetails.bank_acc_num);
+    expect(response.body.data.amount).toBe(withdrawDetails.amount);
+    expect(response.body.data.fee).toBeDefined()
+    expect(response.body.data.reference).toBeDefined()
+  });
+
 });
