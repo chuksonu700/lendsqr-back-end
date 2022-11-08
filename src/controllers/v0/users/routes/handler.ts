@@ -1,6 +1,6 @@
 import { Request, Response} from 'express';
 import {  v4 as uuid } from 'uuid';
-import {  mysqlConnection} from '../../../../config/config';
+import  mysqlConnection from '../../../../config/config';
 import { createLogger } from '../../../../utils/logger';
 
 

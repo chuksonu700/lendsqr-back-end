@@ -1,4 +1,4 @@
-import {mysqlConnection} from './config/config';
+import mysqlConnection from './config/config';
 import { createLogger } from './utils/logger'
 const knex = require('knex')(mysqlConnection)
 
