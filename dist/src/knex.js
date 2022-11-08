@@ -12,11 +12,9 @@ knex.schema.hasTable('users').then(function (exists) {
         // creating table users
         logger.info('Creating Users table');
         return knex.schema.createTable('users', function (t) {
-            t.uuid('id').primary();
             t.string('full_name', 255);
             t.double('acc_bal');
-            t.string('email', 60).unique();
-            t.string('token', 100).nullable();
+            t.string('email', 60).unique().primary();
         });
     }
 });
