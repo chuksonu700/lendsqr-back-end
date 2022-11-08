@@ -34,4 +34,5 @@ knex.schema.hasTable('transactions').then(function(exists:boolean) {
   }
 });
 
+
 export default knex;
