@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { createLogger } from '../../../../utils/logger';
+const  got = require("got");
 
 const logger = createLogger("Withdrawal")
 
@@ -29,4 +30,15 @@ export const runWithdrawal =async (withdrawRequest:any)=>{
 
     logger.info("Withdrawal Completed")
     return queueWithdrawal;
+}
+
+// check Withdrawal status
+export const withdrawalStatus =async (id:Number) => {
+    const response = got.get(`https://api.flutterwave.com/v3/transfers/${id}`,{
+        headers: {
+            Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`
+        },
+    }).json()
+    
+    return response
 }

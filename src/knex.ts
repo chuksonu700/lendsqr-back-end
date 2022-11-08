@@ -11,7 +11,8 @@ knex.schema.hasTable('users').then(function(exists:boolean) {
       t.uuid('id').primary();
       t.string('full_name', 255);
       t.double('acc_bal');
-      t.string('email').unique();
+      t.string('email',60).unique();
+      t.string('token',100).nullable();
     });
   }
 });
@@ -29,7 +30,7 @@ knex.schema.hasTable('transactions').then(function(exists:boolean) {
       t.uuid('email_sender').notNullable().references('email').inTable('users').onDelete("RESTRICT");
       t.uuid('email_reciever').nullable().references('email').inTable('users').onDelete("RESTRICT");
       t.timestamp('created_at').defaultTo(knex.fn.now())
-      logger.info(`Transactions table ${new Date()}`)
+      logger.info(`Transactions table ${new Date().toLocaleString()}`)
     });
   }
 });

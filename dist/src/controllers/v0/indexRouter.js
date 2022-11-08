@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.IndexRouter = void 0;
+const express_1 = require("express");
+const users_router_1 = require("./users/routes/users.router");
+const routes_1 = require("./transactions/routes");
+const router = (0, express_1.Router)();
+router.use('/transaction', routes_1.TranRouter);
+router.use('/users', users_router_1.UserRouter);
+exports.IndexRouter = router;
