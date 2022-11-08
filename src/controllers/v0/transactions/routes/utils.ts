@@ -31,7 +31,6 @@ export const savePendindgTransaction = async (newTransaction: any) => {
     knex('transactions').insert(newTransaction)
         .catch((err: any) => {
             console.log(err);
-            throw err;
         })
         .finally(() => {
             return 'Transaction Inserted'

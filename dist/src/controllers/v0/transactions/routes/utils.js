@@ -35,7 +35,6 @@ const savePendindgTransaction = (newTransaction) => __awaiter(void 0, void 0, vo
     knex('transactions').insert(newTransaction)
         .catch((err) => {
         console.log(err);
-        throw err;
     })
         .finally(() => {
         return 'Transaction Inserted';
