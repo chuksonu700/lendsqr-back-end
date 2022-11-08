@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNewUser = exports.getUserDetails = void 0;
 const uuid_1 = require("uuid");
-const config_1 = require("../../../../config/config");
+const config_1 = __importDefault(require("../../../../config/config"));
 const logger_1 = require("../../../../utils/logger");
-const knex = require('knex')(config_1.mysqlConnection);
+const knex = require('knex')(config_1.default);
 const logger = (0, logger_1.createLogger)("User Router");
 //get a user details from email 
 const getUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

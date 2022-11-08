@@ -14,14 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userTransactions = exports.withdrawalCallback = exports.withdraw = exports.transferRoute = exports.fundAccountCallback = exports.addMoney = void 0;
 const uuid_1 = require("uuid");
-const config_1 = require("../../../../config/config");
+const config_1 = __importDefault(require("../../../../config/config"));
 const Flutterwave = require('flutterwave-node-v3');
 const dotenv_1 = __importDefault(require("dotenv"));
 const utils_1 = require("./utils");
 // setting up envroment variable
 dotenv_1.default.config();
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
-const knex = require('knex')(config_1.mysqlConnection);
+const knex = require('knex')(config_1.default);
 const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, description, trans_type, email, full_name } = req.body;
     if (!amount || amount < 1 || !description || trans_type !== "Add-Money" || !email || !full_name) {

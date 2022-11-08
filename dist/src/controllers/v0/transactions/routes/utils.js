@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyReciever = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
-const config_1 = require("../../../../config/config");
+const config_1 = __importDefault(require("../../../../config/config"));
 const fund_1 = __importDefault(require("./fund"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const withdraw_1 = require("./withdraw");
@@ -22,7 +22,7 @@ const logger = (0, logger_1.createLogger)("Utils Functions");
 dotenv_1.default.config();
 const Flutterwave = require('flutterwave-node-v3');
 const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
-const knex = require('knex')(config_1.mysqlConnection);
+const knex = require('knex')(config_1.default);
 //getting the Payment link
 const getFundAccountLink = (email, amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Get Fund Account Link");

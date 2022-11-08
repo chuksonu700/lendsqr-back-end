@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = require("./config/config");
+const config_1 = __importDefault(require("./config/config"));
 const logger_1 = require("./utils/logger");
-const knex = require('knex')(config_1.mysqlConnection);
+const knex = require('knex')(config_1.default);
 const logger = (0, logger_1.createLogger)("Database-Tables");
 knex.schema.hasTable('users').then(function (exists) {
     if (!exists) {
