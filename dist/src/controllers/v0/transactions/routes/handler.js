@@ -112,12 +112,19 @@ const withdraw = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const withdrawRequest = {
         bank, bank_acc_name, bank_acc_num, email_sender, amount, trans_type, description, transId
     };
-    if (!bank || !bank_acc_name || !bank_acc_num || !email_sender || !amount || trans_type !== "Withdrawal" || !description || amount < 0) {
+    const runVerifyEmail = yield (0, utils_1.verifyEmail)(email_sender);
+    const runGetAccountBalance = yield (0, utils_1.getAccountDetails)(email_sender);
+    if (!bank || !bank_acc_name || !bank_acc_num || !email_sender || !amount || trans_type !== "Withdrawal" || !description || amount < 0 || runVerifyEmail == false) {
         res.status(400).send({ message: "Bad Request" });
         return;
     }
-    const runWithdrawal = yield (0, utils_1.makeWithdrawals)(withdrawRequest);
-    res.status(200).send(runWithdrawal);
+    else if (runGetAccountBalance.acc_bal < amount) {
+        res.status(400).send({ message: "Insufficient Funds", Balance: runGetAccountBalance.acc_bal });
+    }
+    else {
+        const runWithdrawal = yield (0, utils_1.makeWithdrawals)(withdrawRequest);
+        res.status(200).send(runWithdrawal);
+    }
 });
 exports.withdraw = withdraw;
 //withdraw callback

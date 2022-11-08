@@ -214,14 +214,13 @@ export const makeWithdrawals = async (withdrawal: any) => {
                 status: "Queued"
             });
             
-            runIn10Mins(withdrawMoney.data.id)
+            runIn2Mins(withdrawMoney.data.id)
             return withdrawMoney
         } catch (error) {
             console.log(error);
         }
 
     } else {
-        
         logger.info("Withdraw Transaction Failed");
         // Inform the customer their payment was unsuccessful
         //update transaction from pending to Failed
@@ -230,7 +229,6 @@ export const makeWithdrawals = async (withdrawal: any) => {
         }).update({
             status: "Failed"
         });
-        runIn10Mins(withdrawMoney.data.id)
         return withdrawMoney
     }
 
@@ -297,12 +295,21 @@ export const getUserTransactions =async (email:string) => {
     return rows;
 }
 // runs a function to verify withdrawal status every 10 mins
-const runIn10Mins = async(id: any) => {
-    console.log("runs in 10 waiting")
-    setInterval(async() => {
+const runIn2Mins = async(id: any) => {
+    logger.info("Will verify Withdrawal in 2 Mins")
+    setTimeout(async() => {
         const checkStatus = await withdrawalStatus(id);
-        console.log("runs in 10 running")
         console.log(checkStatus)
     }, 90000); 
 }
 
+export const getAccountDetails = async(email:string)=>{
+    logger.info("Get Account Balance");
+    const rows = await knex.from('users').where({email:email}).select("id","email","acc_bal","full_name");
+
+    if (rows.length < 1) {
+        return {message:"Not found"}
+    } else {
+        return  rows[0]     
+    }
+}

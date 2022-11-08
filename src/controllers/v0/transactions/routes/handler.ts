@@ -9,7 +9,7 @@ import {
 import mysqlConnection from '../../../../config/config';
 const Flutterwave = require('flutterwave-node-v3');
 import dotenv from 'dotenv';
-import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyEmail, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions } from './utils';
+import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyEmail, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions, getAccountDetails } from './utils';
 
 // setting up envroment variable
 dotenv.config();
@@ -121,12 +121,18 @@ export const withdraw = async(req:Request,res:Response)=>{
     const withdrawRequest ={
         bank,bank_acc_name,bank_acc_num,email_sender,amount,trans_type,description,transId
     }
-    if (!bank||!bank_acc_name||!bank_acc_num||!email_sender||!amount||trans_type !=="Withdrawal"||!description || amount<0) {
+    const runVerifyEmail = await verifyEmail(email_sender)
+    const runGetAccountBalance = await getAccountDetails(email_sender)
+    if (!bank||!bank_acc_name||!bank_acc_num||!email_sender||!amount||trans_type !=="Withdrawal"||!description || amount<0 || runVerifyEmail==false) {
       res.status(400).send({message:"Bad Request"});
       return
-    }
-    const runWithdrawal = await makeWithdrawals(withdrawRequest); 
+    } else if(runGetAccountBalance.acc_bal <amount){ 
+      res.status(400).send({message:"Insufficient Funds",Balance:runGetAccountBalance.acc_bal});
+    } else {
+      const runWithdrawal = await makeWithdrawals(withdrawRequest); 
       res.status(200).send(runWithdrawal);
+    }
+    
 }
 
 //withdraw callback

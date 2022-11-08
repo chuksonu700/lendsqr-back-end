@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyEmail = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
+exports.getAccountDetails = exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyEmail = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
 const config_1 = __importDefault(require("../../../../config/config"));
 const fund_1 = __importDefault(require("./fund"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -197,7 +197,7 @@ const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, functi
             }).update({
                 status: "Queued"
             });
-            runIn10Mins(withdrawMoney.data.id);
+            runIn2Mins(withdrawMoney.data.id);
             return withdrawMoney;
         }
         catch (error) {
@@ -213,7 +213,6 @@ const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, functi
         }).update({
             status: "Failed"
         });
-        runIn10Mins(withdrawMoney.data.id);
         return withdrawMoney;
     }
 });
@@ -274,11 +273,21 @@ const getUserTransactions = (email) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.getUserTransactions = getUserTransactions;
 // runs a function to verify withdrawal status every 10 mins
-const runIn10Mins = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("runs in 10 waiting");
-    setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+const runIn2Mins = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    logger.info("Will verify Withdrawal in 2 Mins");
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
         const checkStatus = yield (0, withdraw_1.withdrawalStatus)(id);
-        console.log("runs in 10 running");
         console.log(checkStatus);
     }), 90000);
 });
+const getAccountDetails = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    logger.info("Get Account Balance");
+    const rows = yield knex.from('users').where({ email: email }).select("id", "email", "acc_bal", "full_name");
+    if (rows.length < 1) {
+        return { message: "Not found" };
+    }
+    else {
+        return rows[0];
+    }
+});
+exports.getAccountDetails = getAccountDetails;
