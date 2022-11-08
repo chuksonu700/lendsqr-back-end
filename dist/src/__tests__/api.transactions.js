@@ -145,23 +145,42 @@ describe("Withdraw", () => {
     }));
 });
 //withdraw
-describe("Withdraw", () => {
-    let withdrawDetails = {
-        amount: 400,
-        trans_type: "Withdrawal",
-        description: "I need my Money",
-        email_sender: "chuksonu700@gmail.com",
-        bank_acc_num: "0690000032",
-        bank_acc_name: "Chuks Onu",
-        bank: "Access Bank"
+describe("Withdraw callback", () => {
+    let payload = {
+        status: "success",
+        message: "Transfer fetched",
+        data: {
+            id: 374880,
+            account_number: "0690000032",
+            bank_code: "044",
+            full_name: "Pastor Bright",
+            created_at: "2022-11-08T19:10:22.000Z",
+            currency: "NGN",
+            debit_currency: "NGN",
+            amount: 400,
+            fee: 10.75,
+            status: "SUCCESSFUL",
+            reference: "4f133fa0-d396-4a30-abe1-e5b979143f3f9_PMCKDU_1",
+            meta: null,
+            narration: "Payment for things",
+            approver: null,
+            complete_message: "Successful",
+            requires_approval: 0,
+            is_approved: 1,
+            bank_name: "ACCESS BANK NIGERIA"
+        }
     };
     it("Withdraw", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield requests(baseURLs).post(`/withdraw`).send(withdrawDetails);
+        const response = yield requests(baseURLs).get(`/withdrawal-callback`).send(payload);
         expect(response.statusCode).toBe(200);
-        expect(response.body.status).toBe("success");
-        expect(response.body.data.account_number).toBe(withdrawDetails.bank_acc_num);
-        expect(response.body.data.amount).toBe(withdrawDetails.amount);
-        expect(response.body.data.fee).toBeDefined();
-        expect(response.body.data.reference).toBeDefined();
+        expect(response.body.message).toBeDefined();
+    }));
+});
+//withdraw
+describe("Users Transactions", () => {
+    it("Transactions", () => __awaiter(void 0, void 0, void 0, function* () {
+        const response = yield requests(baseURLs).get(`/test@test.com`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeDefined();
     }));
 });

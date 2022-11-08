@@ -258,6 +258,7 @@ const verifyWithdrawal = (payload) => __awaiter(void 0, void 0, void 0, function
         }
         catch (error) {
             console.log(error);
+            return "501 error";
         }
     }
     else {

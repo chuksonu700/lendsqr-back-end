@@ -44,7 +44,7 @@ export const addMoney = async (req: Request, res: Response) => {
     try {
         const saved = await savePendindgTransaction(newTransaction);  
         const linkJson = await getFundAccountLink(email, amount, id, full_name);
-        res.status(200).send(linkJson);            
+        res.status(201).send(linkJson);            
     } catch (error:any) {
         console.log(error);
           res.status(501).send(`Could Not Generate Addmoney Link`);
@@ -140,7 +140,7 @@ export const withdrawalCallback = async (req:Request, res:Response) => {
     // verify transaction
     const payload = req.body;
     const runVerifyWithdrawal = await verifyWithdrawal(payload);
-    res.status(200).send(runVerifyWithdrawal);
+    res.status(200).send({message:runVerifyWithdrawal});
 };
 
 //get all user transaction

@@ -41,7 +41,7 @@ const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const saved = yield (0, utils_1.savePendindgTransaction)(newTransaction);
             const linkJson = yield (0, utils_1.getFundAccountLink)(email, amount, id, full_name);
-            res.status(200).send(linkJson);
+            res.status(201).send(linkJson);
         }
         catch (error) {
             console.log(error);
@@ -132,7 +132,7 @@ const withdrawalCallback = (req, res) => __awaiter(void 0, void 0, void 0, funct
     // verify transaction
     const payload = req.body;
     const runVerifyWithdrawal = yield (0, utils_1.verifyWithdrawal)(payload);
-    res.status(200).send(runVerifyWithdrawal);
+    res.status(200).send({ message: runVerifyWithdrawal });
 });
 exports.withdrawalCallback = withdrawalCallback;
 //get all user transaction

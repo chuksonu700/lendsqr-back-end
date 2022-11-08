@@ -5,7 +5,7 @@ describe("GET User Details",() => {
   
   it("should return 201 No User Found", async () => {
     const response = await request(baseURL).get("/test@asasatest.com");
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('No User Found');
   });
   
@@ -27,9 +27,9 @@ describe("Create account",() => {
     email:"test@test.com",
     full_name:"test Unit"
   }
-  it("should return 200", async () => {
+  it("should return 201", async () => {
   const response = await request(baseURL).post("/create-account").send(newAcc);
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(response.body.email).toBe(newAcc.email);
   });
   it("User already exist", async () => {  

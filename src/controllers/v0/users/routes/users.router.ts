@@ -9,4 +9,6 @@ router.get('/:email', getUserDetails)
 //Create Account
 router.post('/create-account', createNewUser)
 
+
+
 export const UserRouter: Router = router;

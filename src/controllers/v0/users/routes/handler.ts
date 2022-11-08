@@ -19,7 +19,7 @@ export const getUserDetails = async (req: Request, res: Response) => {
     res.status(200).send(rows);
   } else {
     logger.info("No User Found")
-    res.status(201).json({message:'No User Found'});
+    res.status(200).json({message:'No User Found'});
   } 
 }
 
@@ -49,10 +49,11 @@ export const createNewUser = async (req: Request, res: Response) => {
     knex('users').insert(newUser)
       .catch((err: any) => {
         console.log(err);
+        res.status(501).send({message:"Internal server Error"})
       })
       .finally(() => {
         logger.info("return New User")
-        res.status(200).send(newUser);
+        res.status(201).send(newUser);
       })
 
   } else {

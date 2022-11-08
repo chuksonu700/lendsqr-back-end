@@ -13,7 +13,7 @@ const baseURL = "http://localhost:8000/api/v0/users";
 describe("GET User Details", () => {
     it("should return 201 No User Found", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield request(baseURL).get("/test@asasatest.com");
-        expect(response.statusCode).toBe(201);
+        expect(response.statusCode).toBe(200);
         expect(response.body.message).toBe('No User Found');
     }));
     it("should return 200 and email", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,9 +32,9 @@ describe("Create account", () => {
         email: "test@test.com",
         full_name: "test Unit"
     };
-    it("should return 200", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("should return 201", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield request(baseURL).post("/create-account").send(newAcc);
-        expect(response.statusCode).toBe(200);
+        expect(response.statusCode).toBe(201);
         expect(response.body.email).toBe(newAcc.email);
     }));
     it("User already exist", () => __awaiter(void 0, void 0, void 0, function* () {

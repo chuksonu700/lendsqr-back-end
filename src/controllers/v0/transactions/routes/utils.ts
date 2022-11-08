@@ -281,6 +281,7 @@ export const verifyWithdrawal = async (payload: any) => {
             return "Saved Completed";
         } catch (error) {
             console.log(error);
+            return "501 error";
         }
 
     } else {
