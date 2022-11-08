@@ -6,7 +6,7 @@ import {
 import {
     v4 as uuid
 } from 'uuid';
-import {mysqlConnection} from '../../../../config/config';
+import mysqlConnection from '../../../../config/config';
 const Flutterwave = require('flutterwave-node-v3');
 import dotenv from 'dotenv';
 import { cancelledTransaction, getFundAccountLink, makeWithdrawals, savePendindgTransaction, transfer, verifyReciever, VerifyAddMOneyTransaction, verifyWithdrawal,getUserTransactions } from './utils';

@@ -1,6 +1,4 @@
-import {
-    mysqlConnection
-} from '../../../../config/config';
+import mysqlConnection from '../../../../config/config';
 import fundAccount from './fund';
 import dotenv from 'dotenv';
 import {
