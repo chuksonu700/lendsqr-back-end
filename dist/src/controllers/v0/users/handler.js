@@ -42,6 +42,7 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     const { email, full_name } = req.body;
     if (!email || !full_name) {
         res.status(400).send({ message: "Bad Request" });
+        return;
     }
     // creating new user object 
     const newUser = {

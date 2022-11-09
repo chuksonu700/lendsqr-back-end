@@ -45,6 +45,7 @@ export const createNewUser = async (req: Request, res: Response) => {
   } = req.body;
     if(!email || !full_name){
       res.status(400).send({message:"Bad Request"})
+      return
     }
   // creating new user object 
   const newUser = {
