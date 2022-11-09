@@ -2,7 +2,7 @@ import { Request, Response} from 'express';
 import {  v4 as uuid } from 'uuid';
 import  mysqlConnection from '../../../config';
 import { createLogger } from '../../../utils/logger';
-import { getAccountDetails } from '../utils/utility';
+import { getAccountDetails } from '../helpers/users';
 
 
 const knex = require('knex')(mysqlConnection)

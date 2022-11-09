@@ -11,3 +11,14 @@ export const getAccountDetails = async(email:string)=>{
 
     return  rows    
 }
+
+export const verifyEmail = async (email: any) => {
+    logger.info("verify Reciever's Email");
+    const rows = await getAccountDetails(email)
+   
+     if (rows.length < 1) {
+        return false
+    } else {
+        return true
+    }
+}

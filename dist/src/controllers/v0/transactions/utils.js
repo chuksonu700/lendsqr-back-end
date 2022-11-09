@@ -35,22 +35,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.verifyEmail = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.getFundAccountLink = void 0;
+exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.addMoneyLink = void 0;
 const config_1 = __importStar(require("../../../config"));
-const fund_1 = __importDefault(require("./fund"));
+const addMoney_1 = __importDefault(require("./addMoney"));
 const withdraw_1 = require("./withdraw");
 const logger_1 = require("../../../utils/logger");
+const users_1 = require("../helpers/users");
 const logger = (0, logger_1.createLogger)("Utils Functions");
 const Flutterwave = require('flutterwave-node-v3');
 const flw = new Flutterwave(config_1.ENV.FLW_PUBLIC_KEY, config_1.ENV.FLW_SECRET_KEY);
 const knex = require('knex')(config_1.default);
 //getting the Payment link
-const getFundAccountLink = (email, amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
+const addMoneyLink = (email, amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Get Fund Account Link");
-    const putMoney = yield (0, fund_1.default)(amount, transId, full_name);
+    const putMoney = yield (0, addMoney_1.default)(amount, transId, full_name);
     return putMoney;
 });
-exports.getFundAccountLink = getFundAccountLink;
+exports.addMoneyLink = addMoneyLink;
 const savePendindgTransaction = (newTransaction) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Saving Pending Transaction");
     knex('transactions').insert(newTransaction)
@@ -127,66 +128,33 @@ const cancelledTransaction = (tx_ref) => __awaiter(void 0, void 0, void 0, funct
     return `transaction ${tx_ref}  Cancelled`;
 });
 exports.cancelledTransaction = cancelledTransaction;
-const transfer = (transaction) => __awaiter(void 0, void 0, void 0, function* () {
+const transfer = (transaction, amountCharge) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Transfer Money");
-    let charge = Math.ceil(transaction.amount * 0.01);
-    let amountCharge = transaction.amount + charge;
-    // check account balance of sender
-    logger.info("Check account balance of sender");
-    const sender = yield knex.from('users').where({
+    const sender = yield (0, users_1.getAccountDetails)(transaction.email_sender);
+    let senderNewBalance = sender[0].acc_bal - amountCharge;
+    // save new balance ofsender
+    const updatedSenderAccountBalance = yield knex('users').where({
         email: transaction.email_sender
-    }).select("id", "acc_bal");
-    if (sender[0].acc_bal > amountCharge) {
-        logger.info("Successful Transfer");
-        let senderNewBalance = sender[0].acc_bal - amountCharge;
-        // save new balance
-        const updatedSenderAccountBalance = yield knex('users').where({
-            email: transaction.email_sender
-        }).update({
-            acc_bal: senderNewBalance
-        });
-        logger.info("Updating Reciever");
-        const reciever = yield knex.from('users').where({
-            email: transaction.email_reciever
-        }).select("id", "acc_bal");
-        let recieverNewBalance = reciever[0].acc_bal + transaction.amount;
-        // save new balance
-        const updatedRecieverAccountBalance = yield knex('users').where({
-            email: transaction.email_reciever
-        }).update({
-            acc_bal: recieverNewBalance
-        });
-        const rows = yield knex('transactions').where({
-            id: transaction.id
-        }).update({
-            status: "Completed"
-        });
-        return { message: `Completed ${transaction.description}`, status: "Success" };
-    }
-    else {
-        logger.info("Insuffienct Funds");
-        const rows = yield knex('transactions').where({
-            id: transaction.id
-        }).update({
-            status: "Failed insuficient Funds"
-        });
-        return { message: `insuficient Funds`, status: "Failed" };
-    }
+    }).update({
+        acc_bal: senderNewBalance
+    });
+    logger.info("Updating Reciever");
+    const reciever = yield (0, users_1.getAccountDetails)(transaction.reciever);
+    let recieverNewBalance = reciever[0].acc_bal + transaction.amount;
+    // save new balance
+    const updatedRecieverAccountBalance = yield knex('users').where({
+        email: transaction.email_reciever
+    }).update({
+        acc_bal: recieverNewBalance
+    });
+    const rows = yield knex('transactions').where({
+        id: transaction.id
+    }).update({
+        status: "Completed"
+    });
+    return { message: `Completed ${transaction.description}`, status: "Success" };
 });
 exports.transfer = transfer;
-const verifyEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    logger.info("verify Reciever's Email");
-    const rows = yield knex.from('users').where({
-        email: email
-    }).select("id", "email");
-    if (rows.length < 1) {
-        return false;
-    }
-    else {
-        return true;
-    }
-});
-exports.verifyEmail = verifyEmail;
 const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, function* () {
     const { bank, bank_acc_name, bank_acc_num, email_sender, amount, trans_type, } = withdrawal;
     logger.info("Make Withdrawal");

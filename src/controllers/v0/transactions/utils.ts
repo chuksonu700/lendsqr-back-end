@@ -1,11 +1,12 @@
 import mysqlConnection, {ENV} from '../../../config';
-import fundAccount from './fund';
+import addMoney from './addMoney';
 import {
     runWithdrawal, withdrawalStatus
 } from './withdraw';
 import {
     createLogger
 } from '../../../utils/logger';
+import { getAccountDetails } from '../helpers/users';
 
 
 const logger = createLogger("Utils Functions")
@@ -16,10 +17,9 @@ const flw = new Flutterwave(ENV.FLW_PUBLIC_KEY, ENV.FLW_SECRET_KEY);
 const knex = require('knex')(mysqlConnection);
 
 //getting the Payment link
-export const getFundAccountLink = async (email: string, amount: Number, transId: string, full_name: string) => {
-
+export const addMoneyLink = async (email: string, amount: Number, transId: string, full_name: string) => {
     logger.info("Get Fund Account Link")
-    const putMoney = await fundAccount(amount, transId, full_name);
+    const putMoney = await addMoney(amount, transId, full_name);
     return putMoney
 }
 
@@ -103,21 +103,12 @@ export const cancelledTransaction = async (tx_ref: any) => {
     return `transaction ${tx_ref}  Cancelled`
 }
 
-export const transfer = async (transaction: any) => {
+export const transfer = async (transaction: any,amountCharge:number) => {
     
-    logger.info("Transfer Money");
-    let charge: Number = Math.ceil(transaction.amount * 0.01)
-    let amountCharge = transaction.amount + charge;
-    // check account balance of sender
-    logger.info("Check account balance of sender");
-    const sender = await knex.from('users').where({
-        email: transaction.email_sender
-    }).select("id", "acc_bal");
-
-    if (sender[0].acc_bal > amountCharge) {
-        logger.info("Successful Transfer");
+        logger.info("Transfer Money");
+        const sender = await getAccountDetails(transaction.email_sender);
         let senderNewBalance = sender[0].acc_bal - amountCharge;
-        // save new balance
+        // save new balance ofsender
         const updatedSenderAccountBalance = await knex('users').where({
             email: transaction.email_sender
         }).update({
@@ -125,9 +116,7 @@ export const transfer = async (transaction: any) => {
         });
         
     logger.info("Updating Reciever");
-    const reciever = await knex.from('users').where({
-        email: transaction.email_reciever
-    }).select("id", "acc_bal");
+    const reciever = await getAccountDetails(transaction.reciever)
     let recieverNewBalance = reciever[0].acc_bal + transaction.amount;
     // save new balance
     const updatedRecieverAccountBalance = await knex('users').where({
@@ -142,30 +131,7 @@ export const transfer = async (transaction: any) => {
         status: "Completed"
     });
     return {message:`Completed ${transaction.description}`,status:"Success"}
-    
-} else {
-        logger.info("Insuffienct Funds");
-        const rows = await knex('transactions').where({
-            id: transaction.id
-        }).update({
-            status: "Failed insuficient Funds"
-        });
-        return {message:`insuficient Funds`, status:"Failed"}
-    }
 
-}
-
-export const verifyEmail = async (email: any) => {
-    logger.info("verify Reciever's Email");
-    const rows = await knex.from('users').where({
-        email: email
-    }).select("id", "email")
-
-    if (rows.length < 1) {
-        return false
-    } else {
-        return true
-    }
 }
 
 export const makeWithdrawals = async (withdrawal: any) => {

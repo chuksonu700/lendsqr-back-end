@@ -2,13 +2,13 @@ import {
     Router,
 } from 'express';
 
-import { addMoney, fundAccountCallback, transferRoute, withdraw, withdrawalCallback,userTransactions } from '../handler';
+import { addMoney, addMoneyCallback, transferRoute, withdraw, withdrawalCallback,userTransactions } from '../handler';
 
 const router: Router = Router();
 
 router.post('/add-money', addMoney)
 
-router.get('/fund-account-callback', fundAccountCallback);
+router.get('/fund-account-callback', addMoneyCallback);
 
 router.post('/transfer',transferRoute)
 

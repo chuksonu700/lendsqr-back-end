@@ -32,20 +32,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userTransactions = exports.withdrawalCallback = exports.withdraw = exports.transferRoute = exports.fundAccountCallback = exports.addMoney = void 0;
+exports.userTransactions = exports.withdrawalCallback = exports.withdraw = exports.transferRoute = exports.addMoneyCallback = exports.addMoney = void 0;
 const uuid_1 = require("uuid");
 const config_1 = __importStar(require("../../../config"));
 const Flutterwave = require('flutterwave-node-v3');
 const utils_1 = require("./utils");
-const utility_1 = require("../utils/utility");
+const users_1 = require("../helpers/users");
+const transactions_1 = require("../helpers/transactions");
 const flw = new Flutterwave(config_1.ENV.FLW_PUBLIC_KEY, config_1.ENV.FLW_SECRET_KEY);
 const knex = require('knex')(config_1.default);
 const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, description, trans_type, email, full_name } = req.body;
-    const validatUserEmail = yield (0, utils_1.verifyEmail)(email);
+    const validatUserEmail = yield (0, users_1.verifyEmail)(email);
     if (!amount || amount < 1 || !description || trans_type !== "Add-Money" || !email || !full_name || validatUserEmail == false) {
         //incomplete Details
-        res.status(400).send({ error: "Bad Request" });
+        res.status(400).send({
+            error: "Bad Request"
+        });
     }
     else {
         const id = yield (0, uuid_1.v4)();
@@ -58,7 +61,7 @@ const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         };
         try {
             const saved = yield (0, utils_1.savePendindgTransaction)(newTransaction);
-            const linkJson = yield (0, utils_1.getFundAccountLink)(email, amount, id, full_name);
+            const linkJson = yield (0, utils_1.addMoneyLink)(email, amount, id, full_name);
             res.status(201).send(linkJson);
         }
         catch (error) {
@@ -68,55 +71,72 @@ const addMoney = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.addMoney = addMoney;
-//fund account callback
-const fundAccountCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+//addMoney callback
+const addMoneyCallback = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // verify transaction
     let status = req.query.status;
     //cancelled transaction
     if (status == "cancelled") {
         const updateCancelledTransaction = yield (0, utils_1.cancelledTransaction)(req.query.tx_ref);
-        res.status(400).send({ message: updateCancelledTransaction });
+        res.status(200).send({
+            message: updateCancelledTransaction
+        });
     }
     else {
         const runVerify = yield (0, utils_1.VerifyAddMOneyTransaction)(req.query.tx_ref, req.query.transaction_id);
-        res.status(201).send({ message: runVerify });
+        res.status(201).send({
+            message: runVerify
+        });
     }
 });
-exports.fundAccountCallback = fundAccountCallback;
+exports.addMoneyCallback = addMoneyCallback;
 //transfers
 const transferRoute = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { amount, description, trans_type, email_sender, email_reciever, } = req.body;
     if (!amount || !description || trans_type !== "Transfer" || !email_reciever || !email_sender || amount < 1) {
         //incomplete Details
-        res.status(400).send({ error: "Bad Request" });
+        res.status(400).send({
+            error: "Bad Request"
+        });
         return;
     }
     //verifying reciever
-    const validReciever = yield (0, utils_1.verifyEmail)(email_reciever);
+    const validReciever = yield (0, users_1.verifyEmail)(email_reciever);
     if (!validReciever) {
-        res.status(400).send({ message: "Invalid Reciever" });
+        res.status(400).send({
+            message: "Invalid Reciever"
+        });
         return;
     }
-    else {
-        const id = yield (0, uuid_1.v4)();
-        const newDescription = `${trans_type} of ${amount} from ${email_sender} to ${email_reciever} with message ${description}`;
-        const newTransaction = {
-            id,
-            trans_type,
-            amount,
-            description: newDescription,
-            email_sender,
-            email_reciever
-        };
-        try {
-            yield (0, utils_1.savePendindgTransaction)(newTransaction);
-            const sendMoney = yield (0, utils_1.transfer)(newTransaction);
-            res.status(200).send(sendMoney);
-        }
-        catch (error) {
-            console.log(error);
-            res.status(501).send("Internal Server error");
-        }
+    //get senders account balance
+    const sender = yield (0, users_1.getAccountDetails)(email_sender);
+    const addCharges = (0, transactions_1.AddCharge)(amount);
+    //insuficient Funds
+    if (sender[0].acc_bal < addCharges) {
+        res.status(200).send({
+            message: `Insuficient Funds`,
+            status: "Failed"
+        });
+        return;
+    }
+    const id = (0, uuid_1.v4)();
+    const newDescription = `${trans_type} of ${amount} from ${email_sender} to ${email_reciever} with message ${description}`;
+    const newTransaction = {
+        id,
+        trans_type,
+        amount,
+        description: newDescription,
+        email_sender,
+        email_reciever
+    };
+    try {
+        yield (0, utils_1.savePendindgTransaction)(newTransaction);
+        const sendMoney = yield (0, utils_1.transfer)(newTransaction, addCharges);
+        res.status(200).send(sendMoney);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(501).send("Internal Server error");
     }
 });
 exports.transferRoute = transferRoute;
@@ -128,16 +148,28 @@ const withdraw = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const transId = `${(0, uuid_1.v4)()}9_PMCKDU_1`;
     const withdrawRequest = {
-        bank, bank_acc_name, bank_acc_num, email_sender, amount, trans_type, description, transId
+        bank,
+        bank_acc_name,
+        bank_acc_num,
+        email_sender,
+        amount,
+        trans_type,
+        description,
+        transId
     };
-    const runVerifyEmail = yield (0, utils_1.verifyEmail)(email_sender);
-    const runGetAccountBalance = yield (0, utility_1.getAccountDetails)(email_sender);
+    const runVerifyEmail = yield (0, users_1.verifyEmail)(email_sender);
+    const runGetAccountBalance = yield (0, users_1.getAccountDetails)(email_sender);
     if (!bank || !bank_acc_name || !bank_acc_num || !email_sender || !amount || trans_type !== "Withdrawal" || !description || amount < 1 || runVerifyEmail == false) {
-        res.status(400).send({ message: "Bad Request" });
+        res.status(400).send({
+            message: "Bad Request"
+        });
         return;
     }
     else if (runGetAccountBalance.acc_bal < amount) {
-        res.status(400).send({ message: "Insufficient Funds", Balance: runGetAccountBalance.acc_bal });
+        res.status(400).send({
+            message: "Insufficient Funds",
+            Balance: runGetAccountBalance.acc_bal
+        });
     }
     else {
         const runWithdrawal = yield (0, utils_1.makeWithdrawals)(withdrawRequest);
@@ -150,7 +182,9 @@ const withdrawalCallback = (req, res) => __awaiter(void 0, void 0, void 0, funct
     // verify transaction
     const payload = req.body;
     const runVerifyWithdrawal = yield (0, utils_1.verifyWithdrawal)(payload);
-    res.status(200).send({ message: runVerifyWithdrawal });
+    res.status(200).send({
+        message: runVerifyWithdrawal
+    });
 });
 exports.withdrawalCallback = withdrawalCallback;
 //get all user transaction

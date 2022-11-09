@@ -16,13 +16,13 @@ exports.createNewUser = exports.getUserDetails = void 0;
 const uuid_1 = require("uuid");
 const config_1 = __importDefault(require("../../../config"));
 const logger_1 = require("../../../utils/logger");
-const utility_1 = require("../utils/utility");
+const users_1 = require("../helpers/users");
 const knex = require('knex')(config_1.default);
 const logger = (0, logger_1.createLogger)("User Router");
 //get a user details from email 
 const getUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info('Getting single User details');
-    const rows = yield (0, utility_1.getAccountDetails)(req.params.email);
+    const rows = yield (0, users_1.getAccountDetails)(req.params.email);
     if (rows.length > 0) {
         logger.info("User Found");
         res.status(200).send(rows);

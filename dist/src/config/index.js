@@ -35,6 +35,7 @@ exports.ENV = {
     FLW_PUBLIC_KEY: process.env.FLW_PUBLIC_KEY,
     FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
     flv_Ecrypt_key: process.env.flv_Ecrypt_key,
-    port: process.env.PORT
+    port: process.env.PORT,
+    PAYMENT_EMAIL: process.env.PAYMENT_EMAIL
 };
 exports.default = mysqlConnection;

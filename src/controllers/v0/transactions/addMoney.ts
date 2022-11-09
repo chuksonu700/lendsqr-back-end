@@ -3,7 +3,7 @@ import {ENV} from '../../../config'
 import { createLogger } from '../../../utils/logger';
 
 const logger =createLogger("Fund Account")
-const fundAccount= async (amount:Number,transId:string,full_name:string)=>{
+const addMoney= async (amount:Number,transId:string,full_name:string)=>{
 try {
     logger.info("Generating Fund Link");
     console.log(ENV.FLW_SECRET_KEY);
@@ -18,8 +18,7 @@ try {
             currency: "NGN",
             redirect_url: `http://localhost:8000/api/v0/transaction/fund-account-callback`,
             customer: {
-                email:"chuksonu700@gmail.com",
-                name: full_name,
+                email:ENV.PAYMENT_EMAIL,
             },
             customizations: {
                 title: "Demo Credit Add Funds",
@@ -34,4 +33,4 @@ try {
     console.log("err.response.body",err.response.body);
 }
 }
-export default fundAccount;
+export default addMoney;

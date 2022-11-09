@@ -5,7 +5,7 @@ const express_1 = require("express");
 const handler_1 = require("../handler");
 const router = (0, express_1.Router)();
 router.post('/add-money', handler_1.addMoney);
-router.get('/fund-account-callback', handler_1.fundAccountCallback);
+router.get('/fund-account-callback', handler_1.addMoneyCallback);
 router.post('/transfer', handler_1.transferRoute);
 router.post('/withdraw', handler_1.withdraw);
 router.get('/withdrawal-callback', handler_1.withdrawalCallback);

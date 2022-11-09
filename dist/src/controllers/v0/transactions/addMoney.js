@@ -13,7 +13,7 @@ const got = require("got");
 const config_1 = require("../../../config");
 const logger_1 = require("../../../utils/logger");
 const logger = (0, logger_1.createLogger)("Fund Account");
-const fundAccount = (amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
+const addMoney = (amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         logger.info("Generating Fund Link");
         console.log(config_1.ENV.FLW_SECRET_KEY);
@@ -43,4 +43,4 @@ const fundAccount = (amount, transId, full_name) => __awaiter(void 0, void 0, vo
         console.log("err.response.body", err.response.body);
     }
 });
-exports.default = fundAccount;
+exports.default = addMoney;
