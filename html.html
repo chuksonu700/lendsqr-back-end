@@ -20,7 +20,8 @@
 <p>Api Url is https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0</p>
 
 ### Create an Account
-to create an account send a post request to "/users/create-account"
+to create an account send a post request to "/users/create-account 
+e.g https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0/users/create-account"
 with a body
 <code>
     {
@@ -32,8 +33,8 @@ with a body
 expected Response for created User 
 <code>
     {
-        "id": "ff52c063-9ddb-4882-9a7d-b5c671aef851",
-        "email": "test@test.com209",
+        "id": "id-uuid-user-id-user-id",
+        "email": "test@test.com",
         "full_name": "test Unit",
         "acc_bal": 0
     }
@@ -44,6 +45,20 @@ Or
         "message": "User Already Exist"
     }
 </code>
+
+## User Details
+to get a user Details send a get request to "/users/:email" 
+e.g https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0/users/test@test.com
+expected Response for created User 
+<code>
+    {
+        "id": "id-uuid-user-id-user-id",
+        "email": "test@test.com",
+        "full_name": "test Unit",
+        "acc_bal": 0
+    }
+</code>
+
 
 ## Built Using
 <p align="left">

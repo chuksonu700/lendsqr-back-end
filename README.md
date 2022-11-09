@@ -1,18 +1,52 @@
-<h1 align="center">Demo Credit Backend Api</h1>
+
+    <h1 align="center">Demo Credit Backend Api</h1>
 <h4 align="center">A simple rest api that allows the User to</h4>
 
-create an account
-fund their account
-transfer funds to another user’s account
-withdraw funds from their account.
+<ul>
+    <li>create an account</li>
+    <li>create an account</li>
+    <li>transfer funds to another user’s account</li>
+    <li>withdraw funds from their account.</li>
+</ul>
 
+<p>Api Url is https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0</p>
 
-## Built Using
-<p align="left">
-<img src="https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.svg" alt="Nodejs"  height="50"/>&nbsp; &nbsp; 
-<img src="https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-ar21.svg" alt="TypeScript"  height="50"/>&nbsp;   
-<img src="https://www.vectorlogo.zone/logos/expressjs/expressjs-ar21.svg" alt="Express"  height="50"/>&nbsp; &nbsp; 
-<img src="https://www.vectorlogo.zone/logos/mysql/mysql-ar21.svg" alt="Mysql"  height="50"/>&nbsp; &nbsp; 
-</p>
+### Create an Account
+to create an account send a post request to "/users/create-account 
+e.g https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0/users/create-account"
+with a body
+<code>
+    {
+        "email":"test@test.com",
+        "full_name":"test Unit"
+    }
+</code>
 
+expected Response for created User 
+<code>
+    {
+        "id": "id-uuid-user-id-user-id",
+        "email": "test@test.com",
+        "full_name": "test Unit",
+        "acc_bal": 0
+    }
+</code>
+Or 
+<code>
+    {
+        "message": "User Already Exist"
+    }
+</code>
 
+## User Details
+to get a user Details send a get request to "/users/:email" 
+e.g https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0/users/test@test.com
+expected Response for created User 
+<code>
+    {
+        "id": "id-uuid-user-id-user-id",
+        "email": "test@test.com",
+        "full_name": "test Unit",
+        "acc_bal": 0
+    }
+</code>
