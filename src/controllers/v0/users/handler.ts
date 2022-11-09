@@ -13,7 +13,6 @@ const logger = createLogger("User Router")
 export const getUserDetails = async (req: Request, res: Response) => {
 
   logger.info('Getting single User details')
-
   const rows = await getAccountDetails(req.params.email)
   if (rows.length>0) {
     logger.info("User Found")

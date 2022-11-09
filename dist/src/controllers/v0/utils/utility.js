@@ -20,11 +20,6 @@ const logger = (0, logger_1.createLogger)("Utils Functions");
 const getAccountDetails = (email) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Get Account Balance");
     const rows = yield knex.from('users').where({ email: email }).select("id", "email", "acc_bal", "full_name");
-    if (rows.length < 1) {
-        return { message: "Not found" };
-    }
-    else {
-        return rows[0];
-    }
+    return rows;
 });
 exports.getAccountDetails = getAccountDetails;

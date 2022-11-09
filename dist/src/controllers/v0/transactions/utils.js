@@ -47,7 +47,7 @@ const knex = require('knex')(config_1.default);
 //getting the Payment link
 const getFundAccountLink = (email, amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Get Fund Account Link");
-    const putMoney = yield (0, fund_1.default)(email, amount, transId, full_name);
+    const putMoney = yield (0, fund_1.default)(amount, transId, full_name);
     return putMoney;
 });
 exports.getFundAccountLink = getFundAccountLink;

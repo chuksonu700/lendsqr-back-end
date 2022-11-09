@@ -6,9 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const knex_1 = __importDefault(require("./knex"));
 const indexRouter_1 = require("./controllers/v0/indexRouter");
-const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 var morgan = require('morgan');
+var compression = require('compression');
+const helmet_1 = __importDefault(require("helmet"));
 //connecting the database
 knex_1.default.raw("SELECT VERSION()").then((version) => console.log((version[0][0]))).catch((err) => { console.log(err); throw err; })
     .finally(() => {
@@ -17,8 +18,10 @@ knex_1.default.raw("SELECT VERSION()").then((version) => console.log((version[0]
 });
 //setting up express
 const app = (0, express_1.default)();
-//middlewares body-parser 
-app.use(body_parser_1.default.json());
+app.use((0, helmet_1.default)());
+app.use(express_1.default.json());
+//compression middleware
+app.use(compression());
 //Cross oringing Resources Sharing
 app.use((0, cors_1.default)({
     allowedHeaders: [
@@ -30,8 +33,18 @@ app.use((0, cors_1.default)({
     preflightContinue: true,
     origin: '*',
 }));
-//morgan for loging
+//morgan for loging connection
 app.use(morgan('combined'));
+//error handling
+app.use((err, req, res, next) => {
+    console.log(err);
+    console.error(err.stack);
+    res.status(500).send({ error: 'Internal Server Error!' });
+});
 //seting up our routes
 app.use('/api/v0/', indexRouter_1.IndexRouter);
+// custom 404
+app.use((req, res, next) => {
+    res.status(404).send({ error: "Not found!" });
+});
 exports.default = app;

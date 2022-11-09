@@ -19,7 +19,7 @@ const knex = require('knex')(mysqlConnection);
 export const getFundAccountLink = async (email: string, amount: Number, transId: string, full_name: string) => {
 
     logger.info("Get Fund Account Link")
-    const putMoney = await fundAccount(email, amount, transId, full_name);
+    const putMoney = await fundAccount(amount, transId, full_name);
     return putMoney
 }
 
