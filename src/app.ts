@@ -56,6 +56,9 @@ app.use((err:any,req:Request,res:Response,next:NextFunction)=>{
 //seting up our routes
 app.use('/api/v0/', IndexRouter);
 
+app.get('/',(req:Request,res:Response)=>{
+    res.status(200).send('/api/v0/')
+})
 // custom 404
 app.use((req:Request,res:Response,next:NextFunction) => {
     res.status(404).send({error:"Not found!"})

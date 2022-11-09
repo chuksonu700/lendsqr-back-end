@@ -46,6 +46,9 @@ app.use((err, req, res, next) => {
 });
 //seting up our routes
 app.use('/api/v0/', indexRouter_1.IndexRouter);
+app.get('/', (req, res) => {
+    res.status(200).send('/api/v0/');
+});
 // custom 404
 app.use((req, res, next) => {
     res.status(404).send({ error: "Not found!" });
