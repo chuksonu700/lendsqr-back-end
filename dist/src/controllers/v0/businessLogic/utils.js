@@ -37,8 +37,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.addMoneyLink = void 0;
 const config_1 = __importStar(require("../../../config"));
-const addMoney_1 = __importDefault(require("./addMoney"));
-const withdraw_1 = require("./withdraw");
+const addMoney_1 = __importDefault(require("../transactions/addMoney"));
+const withdraw_1 = require("../transactions/withdraw");
 const logger_1 = require("../../../utils/logger");
 const users_1 = require("../dataAccess/users");
 const transactions_1 = require("../dataAccess/transactions");

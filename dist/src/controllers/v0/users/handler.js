@@ -16,20 +16,22 @@ exports.createNewUser = exports.getUserDetails = void 0;
 const uuid_1 = require("uuid");
 const config_1 = __importDefault(require("../../../config"));
 const logger_1 = require("../../../utils/logger");
-const users_1 = require("../helpers/users");
+const users_1 = require("../dataAccess/users");
 const knex = require('knex')(config_1.default);
 const logger = (0, logger_1.createLogger)("User Router");
 //get a user details from email 
 const getUserDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info('Getting single User details');
-    const rows = yield (0, users_1.getAccountDetails)(req.params.email);
-    if (rows.length > 0) {
+    const userDetails = yield (0, users_1.getAccountDetails)(req.params.email);
+    if (userDetails.length > 0) {
         logger.info("User Found");
-        res.status(200).send(rows);
+        res.status(200).send(userDetails);
     }
     else {
         logger.info("No User Found");
-        res.status(200).json({ message: 'No User Found' });
+        res.status(200).json({
+            message: 'No User Found'
+        });
     }
 });
 exports.getUserDetails = getUserDetails;
@@ -47,24 +49,26 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     };
     //call database to check if email already exists
     logger.info('Checking if user already exist');
-    const rows = yield knex.from('users').where({ email: email }).select("id", "email");
-    if (rows.length < 1) {
+    const userDetails = yield (0, users_1.getAccountDetails)(email);
+    if (userDetails.length < 1) {
         logger.info('Saving a new User');
         //save new user
-        knex('users').insert(newUser)
-            .catch((err) => {
-            console.log(err);
-            res.status(501).send({ message: "Internal server Error" });
-        })
-            .finally(() => {
-            logger.info("return New User");
+        const saved = yield (0, users_1.saveNewUser)(newUser);
+        if (saved) {
             res.status(201).send(newUser);
-        });
+        }
+        else {
+            res.status(501).send({
+                message: "An Error Occured"
+            });
+        }
     }
     else {
         // User already Exist.
         logger.info('User Already Exist');
-        res.status(201).json({ message: 'User Already Exist' });
+        res.status(201).json({
+            message: 'User Already Exist'
+        });
     }
 });
 exports.createNewUser = createNewUser;

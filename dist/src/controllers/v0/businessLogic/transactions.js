@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.savePendindgTransaction = exports.addMoneyLink = void 0;
+exports.UserTransactions = exports.verifyWithdrawal = exports.makeWithdrawals = exports.transfer = exports.cancelledTransaction = exports.VerifyAddMOneyTransaction = exports.PendindgTransaction = exports.addMoneyLink = void 0;
 const config_1 = __importStar(require("../../../config"));
 const addMoney_1 = __importDefault(require("./addMoney"));
 const withdraw_1 = require("./withdraw");
@@ -53,25 +53,18 @@ const addMoneyLink = (email, amount, transId, full_name) => __awaiter(void 0, vo
     return putMoney;
 });
 exports.addMoneyLink = addMoneyLink;
-const savePendindgTransaction = (newTransaction) => __awaiter(void 0, void 0, void 0, function* () {
+const PendindgTransaction = (newTransaction) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Saving Pending Transaction");
-    knex('transactions').insert(newTransaction)
-        .catch((err) => {
-        console.log(err);
-        return false;
-    })
-        .finally(() => {
-        return 'Transaction Inserted';
-    });
+    const saved = yield (0, transactions_1.savePendindgTransaction)(newTransaction);
+    return saved;
 });
-exports.savePendindgTransaction = savePendindgTransaction;
+exports.PendindgTransaction = PendindgTransaction;
 const VerifyAddMOneyTransaction = (tx_ref, transactionId) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Verifing Add Money Transaction");
-    const rows = yield knex.from('transactions').where({
-        id: tx_ref
-    }).select("id", "amount", "trans_type", "email_sender", "description");
-    let expectedAmount = rows[0].amount;
-    let email = rows[0].email_sender;
+    //get transaction details from DB
+    const transactionDetails = yield (0, transactions_1.getTransaction)(tx_ref);
+    let expectedAmount = transactionDetails[0].amount;
+    let email = transactionDetails[0].email_sender;
     logger.info("Flutterwave Verify Transaction");
     const response = yield flw.Transaction.verify({
         id: transactionId
@@ -83,71 +76,59 @@ const VerifyAddMOneyTransaction = (tx_ref, transactionId) => __awaiter(void 0, v
         try {
             logger.info("Successful Transaction");
             // update transaction from pending to Completed
-            const updatedId = yield knex('transactions').where({
-                id: tx_ref
-            }).update({
-                status: "Completed"
-            }, ["id"]);
-            // update Account Balance
-            const getAccountBalance = yield knex.from('users').select("id", "acc_bal").where({
-                email: email
-            });
+            yield (0, transactions_1.updateTransactionStatus)(tx_ref, "Completed");
+            // update Account Balance 
+            const getAccountBalance = yield (0, users_1.getAccountDetails)(email);
             // compute new balance
             const new_Acc_Bal = getAccountBalance[0].acc_bal + response.data.amount;
             // save new balance
-            const updatedAccountBalance = yield knex('users').where({
-                email: email
-            }).update({
-                acc_bal: new_Acc_Bal
-            }, ["id"]);
-            return `Completed`;
+            yield (0, users_1.updateUserAccBal)(email, new_Acc_Bal);
+            return { message: `Completed` };
         }
         catch (error) {
             console.log(error);
-            throw error;
+            return { message: `An error Occured` };
         }
     }
     else {
         logger.info("Failed Transaction");
         // Inform the customer their payment was unsuccessful
         //update transaction from pending to Failed
-        const updateTransactionTOFailled = yield knex('transactions').where({
-            id: tx_ref
-        }).update({
-            status: "Failed"
-        });
-        return `Failed`;
+        yield (0, transactions_1.updateTransactionStatus)(tx_ref, "Failed");
+        return { message: `Failed` };
     }
 });
 exports.VerifyAddMOneyTransaction = VerifyAddMOneyTransaction;
 const cancelledTransaction = (tx_ref) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Cancelled Add Money Transaction");
     // update transaction from pending to Cancelled
-    const rows = yield knex('transactions').where({
-        id: tx_ref
-    }).update({
-        status: "Cancelled"
-    });
-    return `transaction ${tx_ref}  Cancelled`;
+    yield (0, transactions_1.updateTransactionStatus)(tx_ref, "Cancelled");
+    return { message: `transaction ${tx_ref}  Cancelled` };
 });
 exports.cancelledTransaction = cancelledTransaction;
 const transfer = (transaction, amountCharge) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Transfer Money");
-    const sender = yield (0, users_1.getAccountDetails)(transaction.email_sender);
-    let senderNewBalance = sender[0].acc_bal - amountCharge;
-    // save new balance ofsender
-    yield (0, users_1.updateUserAccBal)(transaction.email_sender, senderNewBalance);
-    logger.info("Updating Reciever");
-    const reciever = yield (0, users_1.getAccountDetails)(transaction.email_reciever);
-    let recieverNewBalance = reciever[0].acc_bal + transaction.amount;
-    // save new Reciever balance
-    yield (0, users_1.updateUserAccBal)(transaction.email_reciever, recieverNewBalance);
-    //update transaction status
-    yield (0, transactions_1.updateTransactionStatus)(transaction.id, "Completed");
-    return {
-        message: `Completed ${transaction.description}`,
-        status: "Success"
-    };
+    try {
+        const sender = yield (0, users_1.getAccountDetails)(transaction.email_sender);
+        let senderNewBalance = sender[0].acc_bal - amountCharge;
+        // save new balance ofsender
+        yield (0, users_1.updateUserAccBal)(transaction.email_sender, senderNewBalance);
+        logger.info("Updating Reciever");
+        const reciever = yield (0, users_1.getAccountDetails)(transaction.email_reciever);
+        let recieverNewBalance = reciever[0].acc_bal + transaction.amount;
+        // save new Reciever balance
+        yield (0, users_1.updateUserAccBal)(transaction.email_reciever, recieverNewBalance);
+        //update transaction status
+        yield (0, transactions_1.updateTransactionStatus)(transaction.id, "Completed");
+        return {
+            message: `Completed ${transaction.description}`,
+            status: "Success"
+        };
+    }
+    catch (error) {
+        console.log(error);
+        return { message: "An error Occured" };
+    }
 });
 exports.transfer = transfer;
 const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, function* () {
@@ -162,7 +143,7 @@ const makeWithdrawals = (withdrawal) => __awaiter(void 0, void 0, void 0, functi
         description: newDescription
     };
     //saving pendng Trasaction
-    yield (0, exports.savePendindgTransaction)(newTransaction);
+    yield (0, transactions_1.savePendindgTransaction)(newTransaction);
     const withdrawMoney = yield (0, withdraw_1.runWithdrawal)(withdrawal);
     //verify transaction
     if (withdrawMoney.status === "success" && withdrawMoney.message == "Transfer Queued Successfully" &&
@@ -195,12 +176,11 @@ exports.makeWithdrawals = makeWithdrawals;
 const verifyWithdrawal = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Verify Withdrawal Transaction ");
     //get Transaction details from DB
-    const rows = yield (0, transactions_1.getTransaction)(payload.data.reference);
-    let expectedAmount = rows[0].amount;
-    let email = rows[0].email_sender;
-    if (rows[0].status == "Failed" || rows[0].status == "Completed") {
+    const transactionDetails = yield (0, transactions_1.getTransaction)(payload.data.reference);
+    let expectedAmount = transactionDetails[0].amount;
+    let email = transactionDetails[0].email_sender;
+    if (transactionDetails[0].status == "Failed" || transactionDetails[0].status == "Completed") {
         //transaction Already Failed or Completed
-        console.log("Already Updated");
         return { message: "Transaction Already Updated" };
     }
     if (payload.data.status === "SUCCESSFUL" &&
@@ -232,20 +212,16 @@ const verifyWithdrawal = (payload) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.verifyWithdrawal = verifyWithdrawal;
-const getUserTransactions = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    const rows = yield knex.from('transactions').where({
-        email_sender: email
-    }).orWhere({
-        email_reciever: email
-    }).select("*");
-    return rows;
+const UserTransactions = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const thisUserTransaction = yield (0, transactions_1.getUserTransactions)(email);
+    return thisUserTransaction;
 });
-exports.getUserTransactions = getUserTransactions;
+exports.UserTransactions = UserTransactions;
 // runs a function to verify withdrawal status every 10 mins
 const runIn2Mins = (id) => __awaiter(void 0, void 0, void 0, function* () {
     logger.info("Will verify Withdrawal in 2 Mins");
     setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
         const checkStatus = yield (0, withdraw_1.withdrawalStatus)(id);
         (0, exports.verifyWithdrawal)(checkStatus);
-    }), 90000);
+    }), 120000);
 });

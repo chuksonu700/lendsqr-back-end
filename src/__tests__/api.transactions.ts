@@ -189,5 +189,4 @@ describe("Users Transactions",() => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeDefined();
   });
-
 });

@@ -6,32 +6,24 @@ import {
 import {
   v4 as uuid
 } from 'uuid';
-import mysqlConnection, {
-  ENV
-} from '../../../config';
-const Flutterwave = require('flutterwave-node-v3');
 
 import {
   cancelledTransaction,
   addMoneyLink,
   makeWithdrawals,
-  savePendindgTransaction,
+  PendindgTransaction,
   transfer,
   VerifyAddMOneyTransaction,
   verifyWithdrawal,
-  getUserTransactions
-} from './utils';
+  UserTransactions
+} from '../businessLogic/transactions';
 import {
   getAccountDetails,
   verifyEmail
-} from '../helpers/users';
+} from '../dataAccess/users';
 import {
   AddCharge
-} from '../helpers/transactions';
-
-const flw = new Flutterwave(ENV.FLW_PUBLIC_KEY, ENV.FLW_SECRET_KEY);
-
-const knex = require('knex')(mysqlConnection);
+} from '../dataAccess/transactions';
 
 export const addMoney = async (req: Request, res: Response) => {
   const {
@@ -49,8 +41,8 @@ export const addMoney = async (req: Request, res: Response) => {
     res.status(400).send({
       error: "Bad Request"
     });
-  } else {
-
+    return
+  } 
     const id = await uuid();
     const newTransaction = {
       id,
@@ -60,7 +52,7 @@ export const addMoney = async (req: Request, res: Response) => {
       description,
     }
     try {
-      const saved = await savePendindgTransaction(newTransaction);
+      await PendindgTransaction(newTransaction);
       const linkJson = await addMoneyLink(email, amount, id, full_name);
       res.status(201).send(linkJson);
     } catch (error: any) {
@@ -68,7 +60,6 @@ export const addMoney = async (req: Request, res: Response) => {
       res.status(501).send(`Could Not Generate Addmoney Link`);
     }
   }
-}
 
 //addMoney callback
 export const addMoneyCallback = async (req: Request, res: Response) => {
@@ -86,7 +77,6 @@ export const addMoneyCallback = async (req: Request, res: Response) => {
       message: runVerify
     });
   }
-
 };
 
 //transfers
@@ -137,7 +127,7 @@ export const transferRoute = async (req: Request, res: Response) => {
     email_reciever
   }
   try {
-    await savePendindgTransaction(newTransaction);
+    await PendindgTransaction(newTransaction);
     const sendMoney = await transfer(newTransaction, addCharges);
     res.status(200).send(sendMoney);
   } catch (error: any) {
@@ -202,6 +192,6 @@ export const withdrawalCallback = async (req: Request, res: Response) => {
 
 //get all user transaction
 export const userTransactions = async (req: Request, res: Response) => {
-  const transactions = await getUserTransactions(req.params.email)
+  const transactions = await UserTransactions(req.params.email)
   res.status(200).send(transactions);
 }
