@@ -40,6 +40,9 @@ const createNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     logger.info('Saving a new User');
     //gettting the email and full_name from req.bodys
     const { email, full_name } = req.body;
+    if (!email || !full_name) {
+        res.status(400).send({ message: "Bad Request" });
+    }
     // creating new user object 
     const newUser = {
         id: (0, uuid_1.v4)(),

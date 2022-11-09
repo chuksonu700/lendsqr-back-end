@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 align="center">Demo Credit Backend Api</h1>
+<h4 align="center">A simple rest api that allows the User to</h4>
+
+<ul>
+    <li>create an account</li>
+    <li>create an account</li>
+    <li>transfer funds to another user’s account</li>
+    <li>withdraw funds from their account.</li>
+</ul>
+
+<p>Api Url is https://chuks-onuigbo-lendsqr-be-test.herokuapp.com/api/v0</p>
+
+### Create an Account
+to create an account send a post request to "/users/create-account"
+with a body
+<code>
+    {
+        "email":"test@test.com",
+        "full_name":"test Unit"
+    }
+</code>
+
+expected Response for created User 
+<code>
+    {
+        "id": "ff52c063-9ddb-4882-9a7d-b5c671aef851",
+        "email": "test@test.com209",
+        "full_name": "test Unit",
+        "acc_bal": 0
+    }
+</code>
+Or 
+<code>
+    {
+        "message": "User Already Exist"
+    }
+</code>
+
+## Built Using
+<p align="left">
+<img src="https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.svg" alt="Nodejs"  height="50"/>&nbsp; &nbsp; 
+<img src="https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-ar21.svg" alt="TypeScript"  height="50"/>&nbsp;   
+<img src="https://www.vectorlogo.zone/logos/expressjs/expressjs-ar21.svg" alt="Express"  height="50"/>&nbsp; &nbsp; 
+<img src="https://www.vectorlogo.zone/logos/mysql/mysql-ar21.svg" alt="Mysql"  height="50"/>&nbsp; &nbsp; 
+</p>
+</body>
+</html>
