@@ -6,7 +6,6 @@ const logger =createLogger("Fund Account")
 const addMoney= async (amount:Number,transId:string,full_name:string)=>{
 try {
     logger.info("Generating Fund Link");
-    console.log(ENV.FLW_SECRET_KEY);
     
     const response = await got.post("https://api.flutterwave.com/v3/payments", {
         headers: {

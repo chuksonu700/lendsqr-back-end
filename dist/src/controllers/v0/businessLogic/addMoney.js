@@ -16,7 +16,6 @@ const logger = (0, logger_1.createLogger)("Fund Account");
 const addMoney = (amount, transId, full_name) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         logger.info("Generating Fund Link");
-        console.log(config_1.ENV.FLW_SECRET_KEY);
         const response = yield got.post("https://api.flutterwave.com/v3/payments", {
             headers: {
                 Authorization: `Bearer ${config_1.ENV.FLW_SECRET_KEY}`
