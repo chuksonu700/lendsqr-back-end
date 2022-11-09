@@ -24,6 +24,7 @@ This api can process the following
 - [Withdraw Funds](#withdraw-funds)
     - [Sample Request](#sample-request)
 - [Transaction History](#transaction-history)
+- [ER diagram Link](#er-diagram-link)
 - [Built with](#built-with)
 
 Base Url 
@@ -344,7 +345,8 @@ expected result
     }
 ]
 ```
-
+## ER diagram Link
+<a href="https://dbdesigner.page.link/qVuQu3e55PyBszEg8" target="_blank"> Click here</a>
 ## Built with
 
 <p align="left">

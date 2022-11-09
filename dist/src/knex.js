@@ -25,10 +25,10 @@ knex.schema.hasTable('transactions').then(function (exists) {
         logger.info('Creating Transactions table');
         return knex.schema.createTable('transactions', function (t) {
             t.string('id').primary();
-            t.string('trans_type', 25);
-            t.double('amount');
-            t.text('description');
-            t.string('status', 25).defaultTo("Pending...");
+            t.string('trans_type', 25).notNullable();
+            t.double('amount').notNullable();
+            t.text('description').notNullable();
+            t.string('status', 25).defaultTo("Pending...").notNullable();
             t.uuid('email_sender').notNullable().references('email').inTable('users').onDelete("RESTRICT");
             t.uuid('email_reciever').nullable().references('email').inTable('users').onDelete("RESTRICT");
             t.timestamp('created_at').defaultTo(knex.fn.now());
