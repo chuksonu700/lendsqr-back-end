@@ -24,6 +24,7 @@ This api can process the following
 - [Withdraw Funds](#withdraw-funds)
     - [Sample Request](#sample-request)
 - [Transaction History](#transaction-history)
+- [Built with](#built-with)
 
 Base Url 
 ```sh
@@ -343,3 +344,14 @@ expected result
     }
 ]
 ```
+
+## Built with
+
+<p align="left">
+<img src="https://www.vectorlogo.zone/logos/nodejs/nodejs-ar21.svg" alt="Nodejs"  height="50"/>&nbsp; &nbsp; 
+<img src="https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-ar21.svg" alt="TypeScript"  height="50"/>&nbsp;   
+<img src="https://www.vectorlogo.zone/logos/expressjs/expressjs-ar21.svg" alt="Express"  height="50"/>&nbsp; &nbsp; 
+<img src="https://www.vectorlogo.zone/logos/mysql/mysql-ar21.svg" alt="Mysql"  height="50"/>&nbsp; &nbsp;  
+<img src="https://flutterwave.com/images/logo/full.svg" alt="Flutterwave"  height="50"/>&nbsp; &nbsp;
+
+</p>
